@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="WorkFlowPro.API/WorkFlowPro.API.csproj" />
+  <Project Path="WorkFlowPro.Application/WorkFlowPro.Application.csproj" />
+  <Project Path="WorkFlowPro.Domain/WorkFlowPro.Domain.csproj" />
+  <Project Path="WorkFlowPro.Infrastructure/WorkFlowPro.Infrastructure.csproj" />
+</Solution>
