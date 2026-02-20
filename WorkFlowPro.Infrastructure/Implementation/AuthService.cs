@@ -12,92 +12,106 @@ using Microsoft.AspNetCore.Identity;
 
 namespace WorkFlowPro.Infrastructure.Implementation
 {
-public class AuthService : IAuthService
-{
-    private readonly AppDbContext _context;
-    private readonly IConfiguration _configuration;
-
-    public AuthService(AppDbContext context, IConfiguration configuration)
+    public class AuthService : IAuthService
     {
-        _context = context;
-        _configuration = configuration;
-    }
+        private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-    public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
-    {
-        if (await _context.Users.AnyAsync(u => u.Email == request.Email))
-            throw new Exception("User already exists");
-
-        var passwordHasher = new PasswordHasher<User>();
-        var user = new User
+        public AuthService(AppDbContext context, IConfiguration configuration)
         {
-            Email = request.Email,
-            FullName = request.FullName,
-            RoleId = 1 // default role
-        };
+            _context = context;
+            _configuration = configuration;
+        }
 
-        user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-
-        var token = GenerateJwtToken(user);
-
-        return new AuthResponse
+        public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
         {
-            Token = token,
-            Email = user.Email,
-            Role = "User"
-        };
-    }
+            if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+                throw new Exception("User already exists");
 
-    public async Task<AuthResponse> LoginAsync(LoginRequest request)
-    {
-        var user = await _context.Users
-            .Include(u => u.Role)
-            .FirstOrDefaultAsync(u => u.Email == request.Email);
+            var passwordHasher = new PasswordHasher<User>();
+            var role = await _context.Roles
+    .FirstOrDefaultAsync(r => r.Name == "Admin");
 
-        if (user == null)
-            throw new Exception("Invalid credentials");
+            if (role == null)
+            {
+                role = new Role
+                {
+                    
+                    Name = "Admin"
+                };
 
-        var passwordHasher = new PasswordHasher<User>();
-        var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
+                _context.Roles.Add(role);
+                await _context.SaveChangesAsync();
+            }
+            var user = new User
+            {
+                Email = request.Email,
+                FullName = request.FullName,
+                RoleId = 1 // default role
+            };
 
-        if (result == PasswordVerificationResult.Failed)
-            throw new Exception("Invalid credentials");
+            user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
 
-        var token = GenerateJwtToken(user);
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
 
-        return new AuthResponse
+            var token = GenerateJwtToken(user);
+
+            return new AuthResponse
+            {
+                Token = token,
+                Email = user.Email,
+                Role = "User"
+            };
+        }
+
+        public async Task<AuthResponse> LoginAsync(LoginRequest request)
         {
-            Token = token,
-            Email = user.Email,
-            Role = user.Role?.Name
-        };
-    }
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Email == request.Email);
 
-    private string GenerateJwtToken(User user)
-    {
-        var claims = new[]
+            if (user == null)
+                throw new Exception("Invalid credentials");
+
+            var passwordHasher = new PasswordHasher<User>();
+            var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
+
+            if (result == PasswordVerificationResult.Failed)
+                throw new Exception("Invalid credentials");
+
+            var token = GenerateJwtToken(user);
+
+            return new AuthResponse
+            {
+                Token = token,
+                Email = user.Email,
+                Role = user.Role?.Name
+            };
+        }
+
+        private string GenerateJwtToken(User user)
         {
+            var claims = new[]
+            {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role?.Name ?? "User")
+            new Claim(ClaimTypes.Role, user.Role?.Name ?? "Admin")
         };
 
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
-            signingCredentials: creds);
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(2),
+                signingCredentials: creds);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
     }
-}
 }

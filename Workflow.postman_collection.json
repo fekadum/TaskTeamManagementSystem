@@ -1,0 +1,94 @@
+{
+  "info": {
+    "_postman_id": "87f13751-83b2-4ad8-b7b4-e78965873b31",
+    "name": "Workflow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "6247245"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"FullName\":\"Fikadu\",\r\n    \"Password\":\"Abcd@1234\",\r\n    \"Email\":\"fekadum662@gmail.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:7063/api/Auth/register",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7063",
+          "path": [
+            "api",
+            "Auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData=pm.responseBody;\r",
+              "var token  = JSON.stringify(jsonData.token);\r",
+              "postman.setEnvironmentVariable(\"token\",token);\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\":\"fekadum662@gmail.com\",\r\n    \"password\":\"Abcd@1234\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://localhost:7063/api/Auth/login",
+          "protocol": "https",
+          "host": [
+            "localhost"
+          ],
+          "port": "7063",
+          "path": [
+            "api",
+            "Auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "protected",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}
