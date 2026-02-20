@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="D:/Personal/projects/BackEnd/authentication/WorkFlowPro/WorkFlowPro.API/WorkFlowPro.API.csproj" />
-  <Project Path="D:/Personal/projects/BackEnd/authentication/WorkFlowPro/WorkFlowPro.Application/WorkFlowPro.Application.csproj" />
-  <Project Path="D:/Personal/projects/BackEnd/authentication/WorkFlowPro/WorkFlowPro.Domain/WorkFlowPro.Domain.csproj" />
-  <Project Path="D:/Personal/projects/BackEnd/authentication/WorkFlowPro/WorkFlowPro.Infrastructure/WorkFlowPro.Infrastructure.csproj" />
+  <Project Path="WorkFlowPro.API/WorkFlowPro.API.csproj" />
+  <Project Path="WorkFlowPro.Application/WorkFlowPro.Application.csproj" />
+  <Project Path="WorkFlowPro.Domain/WorkFlowPro.Domain.csproj" />
+  <Project Path="WorkFlowPro.Infrastructure/WorkFlowPro.Infrastructure.csproj" />
 </Solution>

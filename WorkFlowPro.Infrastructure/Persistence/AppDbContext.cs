@@ -15,4 +15,5 @@ public class AppDbContext : DbContext
     public DbSet<Role> Roles { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<TaskItem> TaskItems { get; set; }
+    public DbSet<WorkTask> WorkTasks { get; set; }
 }

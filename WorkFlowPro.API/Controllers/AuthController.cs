@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WorkFlowPro.Application.Interface;
 using WorkFlowPro.Application.ModelsDTO;
 
@@ -13,6 +14,7 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
+    [Authorize]
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
@@ -26,9 +28,9 @@ public class AuthController : ControllerBase
         var result = await _authService.LoginAsync(request);
         return Ok(result);
     }
-
+    [Authorize]
     [HttpGet("protected")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    //[Microsoft.AspNetCore.Authorization.Authorize]
     public IActionResult Protected()
     {
         return Ok("You are authenticated");
